@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard Supervisi</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.chart-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.chart-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:1rem}
+.chart-wrap{position:relative;height:220px}
+.chart-wrap-tall{position:relative;height:280px}
+.top-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.rank-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.rank-row:last-child{border-bottom:none}
+.rank-num{width:20px;font-size:12px;font-weight:700;color:var(--text-hint);text-align:center;flex-shrink:0}
+.rank-name{flex:1;font-size:13px;color:var(--text)}
+.rank-room{font-size:11px;color:var(--text-sec)}
+.rank-bar-wrap{width:100px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.rank-bar{height:100%;border-radius:3px}
+.period-select{padding:6px 10px;border:1px solid var(--border2);border-radius:var(--radius);
+  font-size:12px;color:var(--text);background:var(--bg);font-family:inherit;cursor:pointer;outline:none}
+.period-select:focus{border-color:var(--blue-mid)}
+.no-data{text-align:center;padding:3rem 1rem;color:var(--text-sec);font-size:13px}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">Supervisi <span>RS</span></div>
+  <div class="nav-links">
+    <a href="index.html">Beranda</a>
+    <a href="form.html">Formulir</a>
+    <a href="rekap.html">Rekap</a>
+    <a href="dashboard.html" class="active">Dashboard</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="top-row" style="margin-bottom:1rem">
+    <div>
+      <div class="page-title">Dashboard Analitik</div>
+      <div class="page-sub">Visualisasi tren kinerja supervisi keperawatan</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <label style="font-size:12px;color:var(--text-sec)">Periode:</label>
+      <select class="period-select" id="sel-periode" onchange="renderAll()">
+        <option value="3">3 bulan terakhir</option>
+        <option value="6" selected>6 bulan terakhir</option>
+        <option value="12">12 bulan terakhir</option>
+        <option value="0">Semua data</option>
+      </select>
+      <select class="period-select" id="sel-ruangan" onchange="renderAll()">
+        <option value="">Semua ruangan</option>
+      </select>
+      <button class="btn btn-secondary btn-sm" onclick="loadData()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="grid-4" style="margin-bottom:1.25rem" id="kpi-cards">
+    <div class="stat-card"><div class="stat-label">Total Supervisi</div><div class="stat-value" id="k-total">–</div></div>
+    <div class="stat-card"><div class="stat-label">Rata-rata Skor</div><div class="stat-value" id="k-rata">–</div></div>
+    <div class="stat-card"><div class="stat-label">Kategori Sangat Baik</div><div class="stat-value" id="k-sb">–</div></div>
+    <div class="stat-card"><div class="stat-label">Kategori Kurang</div><div class="stat-value" id="k-kurang">–</div></div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:1.25rem">
+    <div class="chart-card">
+      <div class="top-row" style="margin-bottom:1rem">
+        <div class="chart-title" style="margin:0">Tren skor bulanan</div>
+      </div>
+      <div class="chart-wrap" id="line-wrap"><canvas id="chart-line"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Profil aspek (rata-rata)</div>
+      <div class="chart-wrap" id="radar-wrap"><canvas id="chart-radar"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:1.25rem">
+    <div class="chart-card">
+      <div class="chart-title">Perbandingan skor per ruangan</div>
+      <div class="chart-wrap-tall"><canvas id="chart-bar"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Distribusi kategori</div>
+      <div class="chart-wrap"><canvas id="chart-doughnut"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="chart-card">
+      <div class="chart-title">Perawat dengan skor tertinggi (top 5)</div>
+      <div id="top-list"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Perawat yang perlu perhatian (5 terendah)</div>
+      <div id="bottom-list"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="config.js"></script>
+<script>
+let allData = [];
+let charts = {};
+
+const COLORS = {
+  blue: '#378ADD', green: '#639922', amber: '#BA7517',
+  red: '#E24B4A', purple: '#7F77DD', teal: '#1D9E75'
+};
+
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#73726c';
+Chart.defaults.plugins.legend.labels.boxWidth = 12;
+Chart.defaults.plugins.legend.labels.padding = 10;
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+function getFiltered() {
+  const bulan = parseInt(document.getElementById('sel-periode').value);
+  const ruangan = document.getElementById('sel-ruangan').value;
+  let data = [...allData];
+  if (ruangan) data = data.filter(d => d.ruangan === ruangan);
+  if (bulan > 0) {
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - bulan);
+    data = data.filter(d => new Date(d.tanggal) >= cutoff);
+  }
+  return data;
+}
+
+function renderAll() {
+  const data = getFiltered();
+  renderKPI(data);
+  renderLine(data);
+  renderRadar(data);
+  renderBar(data);
+  renderDoughnut(data);
+  renderRanking(data);
+}
+
+function renderKPI(data) {
+  if (!data.length) {
+    ['k-total','k-rata','k-sb','k-kurang'].forEach(id => document.getElementById(id).textContent = '–');
+    return;
+  }
+  const avg = Math.round(data.reduce((a,b) => a+b.skor_total, 0) / data.length);
+  document.getElementById('k-total').textContent = data.length;
+  document.getElementById('k-rata').textContent = avg + '%';
+  document.getElementById('k-sb').textContent = data.filter(d => d.kategori === 'Sangat Baik').length;
+  document.getElementById('k-kurang').textContent = data.filter(d => d.kategori === 'Kurang').length;
+}
+
+function renderLine(data) {
+  destroyChart('line');
+  if (!data.length) return;
+  const byMonth = {};
+  data.forEach(d => {
+    const key = d.tanggal?.slice(0,7);
+    if (!key) return;
+    if (!byMonth[key]) byMonth[key] = [];
+    byMonth[key].push(d.skor_total);
+  });
+  const labels = Object.keys(byMonth).sort();
+  const vals = labels.map(k => Math.round(byMonth[k].reduce((a,b)=>a+b,0)/byMonth[k].length));
+  const ctx = document.getElementById('chart-line').getContext('2d');
+  charts.line = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels.map(l => {
+        const [y,m] = l.split('-');
+        return new Date(y,m-1).toLocaleDateString('id-ID',{month:'short',year:'2-digit'});
+      }),
+      datasets: [{
+        label: 'Rata-rata skor',
+        data: vals,
+        borderColor: COLORS.blue,
+        backgroundColor: 'rgba(55,138,221,.1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.35,
+        pointBackgroundColor: COLORS.blue,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, grid: { color: 'rgba(0,0,0,.06)' },
+             ticks: { callback: v => v + '%' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderRadar(data) {
+  destroyChart('radar');
+  if (!data.length) return;
+  const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
+  const vals = [
+    avg(data.map(d => d.skor_askep).filter(Boolean)),
+    avg(data.map(d => d.skor_sop).filter(Boolean)),
+    avg(data.map(d => d.skor_manajemen).filter(Boolean)),
+    avg(data.map(d => d.skor_dokumentasi).filter(Boolean))
+  ];
+  const ctx = document.getElementById('chart-radar').getContext('2d');
+  charts.radar = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['Askep','Tindakan/SOP','Manajemen','Dokumentasi'],
+      datasets: [{
+        label: 'Rata-rata',
+        data: vals,
+        backgroundColor: 'rgba(55,138,221,.15)',
+        borderColor: COLORS.blue,
+        borderWidth: 2,
+        pointBackgroundColor: COLORS.blue,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, callback: v => v+'%' } } }
+    }
+  });
+}
+
+function renderBar(data) {
+  destroyChart('bar');
+  if (!data.length) return;
+  const byRoom = {};
+  data.forEach(d => {
+    if (!byRoom[d.ruangan]) byRoom[d.ruangan] = [];
+    byRoom[d.ruangan].push(d.skor_total);
+  });
+  const labels = Object.keys(byRoom).sort();
+  const vals = labels.map(r => Math.round(byRoom[r].reduce((a,b)=>a+b,0)/byRoom[r].length));
+  const bgColors = vals.map(v => v >= 86 ? COLORS.green : v >= 71 ? COLORS.blue : v >= 56 ? COLORS.amber : COLORS.red);
+  const ctx = document.getElementById('chart-bar').getContext('2d');
+  charts.bar = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Rata-rata skor',
+        data: vals,
+        backgroundColor: bgColors,
+        borderRadius: 4,
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + '%' } } },
+      scales: {
+        x: { min: 0, max: 100, ticks: { callback: v => v+'%' }, grid: { color: 'rgba(0,0,0,.06)' } },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderDoughnut(data) {
+  destroyChart('doughnut');
+  if (!data.length) return;
+  const cats = { 'Sangat Baik': 0, 'Baik': 0, 'Cukup': 0, 'Kurang': 0 };
+  data.forEach(d => { if (cats[d.kategori] !== undefined) cats[d.kategori]++; });
+  const ctx = document.getElementById('chart-doughnut').getContext('2d');
+  charts.doughnut = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(cats),
+      datasets: [{
+        data: Object.values(cats),
+        backgroundColor: [COLORS.green, COLORS.blue, COLORS.amber, COLORS.red],
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '55%',
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.raw + ' sesi' } }
+      }
+    }
+  });
+}
+
+function renderRanking(data) {
+  if (!data.length) {
+    document.getElementById('top-list').innerHTML = '<div class="no-data">Belum ada data</div>';
+    document.getElementById('bottom-list').innerHTML = '<div class="no-data">Belum ada data</div>';
+    return;
+  }
+  const byPerson = {};
+  data.forEach(d => {
+    if (!byPerson[d.nama_perawat]) byPerson[d.nama_perawat] = { scores: [], ruangan: d.ruangan };
+    byPerson[d.nama_perawat].scores.push(d.skor_total);
+  });
+  const ranking = Object.entries(byPerson).map(([nama, v]) => ({
+    nama,
+    ruangan: v.ruangan,
+    avg: Math.round(v.scores.reduce((a,b)=>a+b,0)/v.scores.length),
+    n: v.scores.length
+  })).sort((a,b) => b.avg - a.avg);
+
+  function makeList(items) {
+    return items.map((d, i) => {
+      const kat = getKategori(d.avg);
+      const barColor = d.avg >= 86 ? COLORS.green : d.avg >= 71 ? COLORS.blue : d.avg >= 56 ? COLORS.amber : COLORS.red;
+      return `<div class="rank-row">
+        <div class="rank-num">${i+1}</div>
+        <div style="flex:1">
+          <div class="rank-name">${d.nama}</div>
+          <div class="rank-room">${d.ruangan} · ${d.n} sesi</div>
+          <div class="rank-bar-wrap" style="margin-top:4px">
+            <div class="rank-bar" style="width:${d.avg}%;background:${barColor}"></div>
+          </div>
+        </div>
+        <span class="badge ${kat.cls}">${d.avg}%</span>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('top-list').innerHTML = makeList(ranking.slice(0, 5));
+  document.getElementById('bottom-list').innerHTML = makeList([...ranking].sort((a,b)=>a.avg-b.avg).slice(0,5));
+}
+
+async function loadData() {
+  let data = ambilLokal();
+  if (!CONFIG.APPS_SCRIPT_URL.includes('GANTI')) {
+    try {
+      const resp = await fetch(CONFIG.APPS_SCRIPT_URL + '?action=getData');
+      const result = await resp.json();
+      if (result.data?.length) {
+        data = result.data;
+        localStorage.setItem('supervisi_data', JSON.stringify(data));
+      }
+    } catch (e) { console.warn('Pakai data lokal:', e); }
+  }
+  allData = data;
+
+  const sel = document.getElementById('sel-ruangan');
+  [...new Set(data.map(d => d.ruangan))].sort().forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = opt.textContent = r;
+    sel.appendChild(opt);
+  });
+  renderAll();
+}
+
+loadData();
+</script>
+</body>
+</html>

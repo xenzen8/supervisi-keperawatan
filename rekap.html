@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rekap Supervisi</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.filter-bar{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:1rem 1.25rem;margin-bottom:1rem;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.filter-group{display:flex;flex-direction:column;gap:4px}
+.filter-group label{font-size:11px;font-weight:500;color:var(--text-sec)}
+.filter-group select,
+.filter-group input{min-width:150px;padding:7px 10px;border:1px solid var(--border2);
+  border-radius:var(--radius);font-size:13px;color:var(--text);font-family:inherit;background:var(--bg)}
+.filter-group select:focus,
+.filter-group input:focus{border-color:var(--blue-mid);outline:none}
+.detail-row{background:var(--bg2);padding:10px 14px;border-bottom:1px solid var(--border);display:none}
+.detail-row.open{display:table-row}
+td.expand-btn{cursor:pointer;color:var(--text-hint);font-size:11px;white-space:nowrap}
+td.expand-btn:hover{color:var(--blue)}
+.asp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}
+.asp-cell{background:var(--bg);border-radius:var(--radius);padding:8px 10px;border:1px solid var(--border)}
+.asp-lbl{font-size:10px;color:var(--text-sec);text-transform:uppercase;letter-spacing:.04em}
+.asp-val{font-size:16px;font-weight:700;margin-top:2px}
+.empty-tr td{text-align:center;padding:2.5rem;color:var(--text-sec);font-size:13px}
+.sort-icon{opacity:.4;font-size:10px}
+.sort-icon.asc::after{content:'↑';opacity:1}
+.sort-icon.desc::after{content:'↓';opacity:1}
+@media print{
+  .filter-bar,.no-print{display:none!important}
+  .detail-row:not(.open){display:none!important}
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">Supervisi <span>RS</span></div>
+  <div class="nav-links">
+    <a href="index.html">Beranda</a>
+    <a href="form.html">Formulir</a>
+    <a href="rekap.html" class="active">Rekap</a>
+    <a href="dashboard.html">Dashboard</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px">
+    <div>
+      <div class="page-title">Rekap & Riwayat Supervisi</div>
+      <div class="page-sub" id="rekap-sub">Memuat data...</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap" class="no-print">
+      <button class="btn btn-secondary" onclick="loadData()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        Refresh
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Cetak / PDF
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="exportCSV()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Unduh CSV
+      </button>
+    </div>
+  </div>
+
+  <div class="filter-bar no-print">
+    <div class="filter-group">
+      <label>Ruangan</label>
+      <select id="f-ruangan" onchange="applyFilter()">
+        <option value="">Semua ruangan</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Jabatan</label>
+      <select id="f-jabatan" onchange="applyFilter()">
+        <option value="">Semua jabatan</option>
+        <option>Kepala Ruangan</option>
+        <option>Perawat Pelaksana</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Kategori</label>
+      <select id="f-kategori" onchange="applyFilter()">
+        <option value="">Semua kategori</option>
+        <option>Sangat Baik</option>
+        <option>Baik</option>
+        <option>Cukup</option>
+        <option>Kurang</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Dari tanggal</label>
+      <input type="date" id="f-dari" onchange="applyFilter()">
+    </div>
+    <div class="filter-group">
+      <label>Sampai tanggal</label>
+      <input type="date" id="f-sampai" onchange="applyFilter()">
+    </div>
+    <div class="filter-group">
+      <label>Cari nama</label>
+      <input type="text" id="f-cari" placeholder="Nama perawat..." oninput="applyFilter()">
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="resetFilter()">Reset</button>
+  </div>
+
+  <div id="toast-area"></div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div id="loading-row" style="padding:2rem;text-align:center;color:var(--text-sec)">
+      <span class="loading loading-dark"></span>
+      <span style="margin-left:8px;font-size:13px">Memuat data...</span>
+    </div>
+    <div class="table-wrap">
+      <table id="rekap-table" style="display:none">
+        <thead>
+          <tr>
+            <th onclick="sortTable('tanggal')">Tanggal <span class="sort-icon" id="sort-tanggal"></span></th>
+            <th onclick="sortTable('ruangan')">Ruangan <span class="sort-icon" id="sort-ruangan"></span></th>
+            <th onclick="sortTable('nama_perawat')">Perawat <span class="sort-icon" id="sort-nama_perawat"></span></th>
+            <th>Jabatan</th>
+            <th>Shift</th>
+            <th onclick="sortTable('skor_askep')">Askep <span class="sort-icon" id="sort-skor_askep"></span></th>
+            <th onclick="sortTable('skor_sop')">SOP <span class="sort-icon" id="sort-skor_sop"></span></th>
+            <th onclick="sortTable('skor_manajemen')">Mgmt <span class="sort-icon" id="sort-skor_manajemen"></span></th>
+            <th onclick="sortTable('skor_dokumentasi')">Dok <span class="sort-icon" id="sort-skor_dokumentasi"></span></th>
+            <th onclick="sortTable('skor_total')">Total <span class="sort-icon" id="sort-skor_total"></span></th>
+            <th>Kategori</th>
+            <th class="no-print">Detail</th>
+          </tr>
+        </thead>
+        <tbody id="rekap-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-4" style="margin-top:1rem" id="summary-stats"></div>
+</div>
+
+<script src="config.js"></script>
+<script>
+let allData = [];
+let filtered = [];
+let sortKey = 'tanggal';
+let sortDir = 'desc';
+
+async function loadData() {
+  document.getElementById('loading-row').style.display = 'block';
+  document.getElementById('rekap-table').style.display = 'none';
+
+  let data = ambilLokal();
+
+  if (!CONFIG.APPS_SCRIPT_URL.includes('GANTI')) {
+    try {
+      const resp = await fetch(CONFIG.APPS_SCRIPT_URL + '?action=getData');
+      const result = await resp.json();
+      if (result.data && result.data.length) {
+        data = result.data;
+        // Sync lokal
+        localStorage.setItem('supervisi_data', JSON.stringify(data));
+      }
+    } catch (e) {
+      console.warn('Gagal fetch dari Sheets, pakai data lokal:', e);
+    }
+  }
+
+  allData = data;
+  populateFilters();
+  applyFilter();
+  document.getElementById('loading-row').style.display = 'none';
+  document.getElementById('rekap-table').style.display = 'table';
+}
+
+function populateFilters() {
+  const sel = document.getElementById('f-ruangan');
+  const existing = [...sel.options].map(o => o.value);
+  [...new Set(allData.map(d => d.ruangan))].sort().forEach(r => {
+    if (!existing.includes(r)) {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = r;
+      sel.appendChild(opt);
+    }
+  });
+}
+
+function applyFilter() {
+  const ruangan = document.getElementById('f-ruangan').value;
+  const jabatan = document.getElementById('f-jabatan').value;
+  const kategori = document.getElementById('f-kategori').value;
+  const dari = document.getElementById('f-dari').value;
+  const sampai = document.getElementById('f-sampai').value;
+  const cari = document.getElementById('f-cari').value.toLowerCase();
+
+  filtered = allData.filter(d => {
+    if (ruangan && d.ruangan !== ruangan) return false;
+    if (jabatan && d.jabatan !== jabatan) return false;
+    if (kategori && d.kategori !== kategori) return false;
+    if (cari && !d.nama_perawat.toLowerCase().includes(cari)) return false;
+    if (dari && d.tanggal < dari) return false;
+    if (sampai && d.tanggal > sampai) return false;
+    return true;
+  });
+
+  sortData();
+  renderTable();
+  renderSummary();
+  document.getElementById('rekap-sub').textContent = `${filtered.length} dari ${allData.length} data supervisi`;
+}
+
+function sortData() {
+  filtered.sort((a, b) => {
+    let va = a[sortKey], vb = b[sortKey];
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb?.toLowerCase() || ''; }
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
+function sortTable(key) {
+  if (sortKey === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  else { sortKey = key; sortDir = 'desc'; }
+  document.querySelectorAll('.sort-icon').forEach(el => el.className = 'sort-icon');
+  const el = document.getElementById('sort-' + key);
+  if (el) el.className = 'sort-icon ' + sortDir;
+  sortData();
+  renderTable();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('rekap-tbody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr class="empty-tr"><td colspan="12">Tidak ada data yang sesuai filter</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map((d, i) => {
+    const kat = getKategori(d.skor_total);
+    return `
+      <tr>
+        <td>${formatTanggal(d.tanggal)}</td>
+        <td>${d.ruangan}</td>
+        <td style="font-weight:500">${d.nama_perawat}</td>
+        <td><span style="font-size:11px;color:var(--text-sec)">${d.jabatan}</span></td>
+        <td>${d.shift?.split(' ')[0] || '–'}</td>
+        <td><span style="font-weight:600">${d.skor_askep ?? '–'}</span></td>
+        <td><span style="font-weight:600">${d.skor_sop ?? '–'}</span></td>
+        <td><span style="font-weight:600">${d.skor_manajemen ?? '–'}</span></td>
+        <td><span style="font-weight:600">${d.skor_dokumentasi ?? '–'}</span></td>
+        <td><span style="font-weight:700;font-size:14px">${d.skor_total}%</span></td>
+        <td><span class="badge ${kat.cls}">${kat.label}</span></td>
+        <td class="expand-btn no-print" onclick="toggleDetail(${i},this)">▶ Lihat</td>
+      </tr>
+      <tr class="detail-row" id="detail-${i}">
+        <td colspan="12">
+          <div class="asp-grid">
+            <div class="asp-cell"><div class="asp-lbl">Asuhan Keperawatan</div><div class="asp-val" style="color:${d.skor_askep>=71?'var(--green)':'var(--amber)'}">${d.skor_askep ?? '–'}%</div></div>
+            <div class="asp-cell"><div class="asp-lbl">Tindakan / SOP</div><div class="asp-val" style="color:${d.skor_sop>=71?'var(--green)':'var(--amber)'}">${d.skor_sop ?? '–'}%</div></div>
+            <div class="asp-cell"><div class="asp-lbl">Manajemen Ruangan</div><div class="asp-val" style="color:${d.skor_manajemen>=71?'var(--green)':'var(--amber)'}">${d.skor_manajemen ?? '–'}%</div></div>
+            <div class="asp-cell"><div class="asp-lbl">Dokumentasi</div><div class="asp-val" style="color:${d.skor_dokumentasi>=71?'var(--green)':'var(--amber)'}">${d.skor_dokumentasi ?? '–'}%</div></div>
+          </div>
+          ${d.catatan ? `<div style="font-size:12px;color:var(--text-sec);margin-top:6px"><strong>Catatan:</strong> ${d.catatan}</div>` : ''}
+          ${d.rekomendasi ? `<div style="font-size:12px;color:var(--text-sec);margin-top:4px"><strong>Rekomendasi:</strong> ${d.rekomendasi}</div>` : ''}
+          ${d.supervisor ? `<div style="font-size:11px;color:var(--text-hint);margin-top:4px">Supervisor: ${d.supervisor}</div>` : ''}
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function toggleDetail(i, btn) {
+  const row = document.getElementById('detail-' + i);
+  const open = row.classList.contains('open');
+  row.classList.toggle('open', !open);
+  btn.textContent = open ? '▶ Lihat' : '▼ Tutup';
+}
+
+function renderSummary() {
+  if (!filtered.length) { document.getElementById('summary-stats').innerHTML = ''; return; }
+  const avg = Math.round(filtered.reduce((a,b) => a+b.skor_total, 0) / filtered.length);
+  const max = Math.max(...filtered.map(d => d.skor_total));
+  const min = Math.min(...filtered.map(d => d.skor_total));
+  const katCount = {};
+  filtered.forEach(d => katCount[d.kategori] = (katCount[d.kategori]||0)+1);
+  const dom = Object.entries(katCount).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('summary-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Total Data</div><div class="stat-value">${filtered.length}</div><div class="stat-sub">sesi supervisi</div></div>
+    <div class="stat-card"><div class="stat-label">Rata-rata Skor</div><div class="stat-value">${avg}%</div><div class="stat-sub">${getKategori(avg).label}</div></div>
+    <div class="stat-card"><div class="stat-label">Skor Tertinggi</div><div class="stat-value">${max}%</div><div class="stat-sub">dari hasil filter</div></div>
+    <div class="stat-card"><div class="stat-label">Kategori Terbanyak</div><div class="stat-value" style="font-size:16px">${dom?.[0]||'–'}</div><div class="stat-sub">${dom?.[1]||0} sesi</div></div>`;
+}
+
+function resetFilter() {
+  ['f-ruangan','f-jabatan','f-kategori'].forEach(id => document.getElementById(id).value = '');
+  ['f-dari','f-sampai','f-cari'].forEach(id => document.getElementById(id).value = '');
+  applyFilter();
+}
+
+function exportCSV() {
+  const header = ['Tanggal','Supervisor','Ruangan','Perawat','Jabatan','Shift','Askep','SOP','Manajemen','Dokumentasi','Total','Kategori','Catatan','Rekomendasi'];
+  const rows = filtered.map(d => [
+    d.tanggal, d.supervisor, d.ruangan, d.nama_perawat, d.jabatan, d.shift,
+    d.skor_askep, d.skor_sop, d.skor_manajemen, d.skor_dokumentasi,
+    d.skor_total, d.kategori, `"${(d.catatan||'').replace(/"/g,'""')}"`, `"${(d.rekomendasi||'').replace(/"/g,'""')}"`
+  ]);
+  const csv = [header, ...rows].map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'rekap-supervisi-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+loadData();
+</script>
+</body>
+</html>
