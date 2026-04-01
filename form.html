@@ -568,7 +568,7 @@
         <div class="total-val">${total}%</div></div>
       <span class="badge ${kat.cls}" style="font-size:14px;padding:6px 14px">${kat.label}</span>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem">
+    <div class="skor-summary" style="margin-bottom:1rem">
       ${instrumen.map((sec, i) => {
         const c = getKategori(skor_aspek[i]);
         return `<div class="skor-box"><div class="skor-box-lbl">${sec.judul.replace(/^[A-D]\.\s*/, '')}</div>

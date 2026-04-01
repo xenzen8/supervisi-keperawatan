@@ -564,25 +564,420 @@ tr:last-child td {
   border-top-color: var(--blue)
 }
 
-/* RESPONSIVE */
-@media(max-width:640px) {
+/* ============================= */
+/* RESPONSIVE — TABLET (≤768px) */
+/* ============================= */
+@media (max-width: 768px) {
+  .grid-2 {
+    grid-template-columns: 1fr
+  }
 
-  .grid-2,
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr)
+  }
+
+  .container {
+    padding: 1.25rem 1rem
+  }
+
+  /* Nav: scrollable links */
+  nav {
+    padding: 0 1rem;
+    gap: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch
+  }
+
+  .nav-brand {
+    margin-right: 1rem;
+    flex-shrink: 0
+  }
+
+  .nav-brand img {
+    width: 30px;
+    height: 30px
+  }
+
+  .nav-brand-text {
+    font-size: 12px
+  }
+
+  .nav-brand-sub {
+    font-size: 9px
+  }
+
+  .nav-links {
+    flex-shrink: 0
+  }
+
+  .nav-links a {
+    padding: 12px 10px;
+    font-size: 12px;
+    white-space: nowrap
+  }
+
+  /* Page title */
+  .page-title {
+    font-size: 18px
+  }
+
+  /* Hero on index */
+  .hero {
+    flex-direction: column !important;
+    text-align: center;
+    gap: 1rem !important;
+    padding: 1.5rem 1rem !important
+  }
+
+  .hero > div[style*="margin-left:auto"] {
+    margin-left: 0 !important;
+    text-align: center !important
+  }
+
+  .hero h1 {
+    font-size: 18px !important
+  }
+
+  /* Step bar compact */
+  .step-bar {
+    margin-bottom: 1rem
+  }
+
+  .step {
+    padding: 8px 4px
+  }
+
+  .step-num {
+    font-size: 14px
+  }
+
+  .step-lbl {
+    font-size: 9px
+  }
+
+  /* Score buttons — bigger touch targets */
+  .score-group {
+    gap: 4px
+  }
+
+  .score-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 14px
+  }
+
+  /* Item row on instrumen */
+  .item-row {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 0
+  }
+
+  .item-text {
+    flex-basis: calc(100% - 28px);
+    font-size: 13px
+  }
+
+  .score-group {
+    margin-left: 28px
+  }
+
+  /* Skor summary — 2x2 grid */
+  .skor-summary {
+    grid-template-columns: repeat(2, 1fr) !important
+  }
+
+  /* Section header */
+  .section-head {
+    flex-wrap: wrap;
+    gap: 6px
+  }
+
+  /* Filter bar — full width items */
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch !important
+  }
+
+  .filter-group {
+    width: 100%
+  }
+
+  .filter-group select,
+  .filter-group input {
+    min-width: unset;
+    width: 100%
+  }
+
+  /* Table: smaller font, horizontal scroll */
+  table {
+    font-size: 12px
+  }
+
+  th, td {
+    padding: 7px 6px
+  }
+
+  th {
+    font-size: 10px
+  }
+
+  /* Buttons responsive */
+  .btn-lg {
+    padding: 10px 16px;
+    font-size: 13px
+  }
+
+  /* Total box on preview */
+  .total-box {
+    flex-direction: column !important;
+    text-align: center;
+    gap: 8px !important
+  }
+
+  /* Asp grid (detail row & preview) */
+  .asp-grid {
+    grid-template-columns: repeat(2, 1fr) !important
+  }
+
+  /* Preview grid */
+  div[style*="grid-template-columns:repeat(4"] {
+    grid-template-columns: repeat(2, 1fr) !important
+  }
+
+  /* Success screen */
+  .success-screen {
+    padding: 1.5rem 0.5rem !important
+  }
+
+  /* Stat cards */
+  .stat-value {
+    font-size: 20px
+  }
+
+  /* Quick buttons */
+  .qb-icon {
+    width: 36px;
+    height: 36px
+  }
+
+  /* Chart cards */
+  .chart-wrap {
+    height: 200px !important
+  }
+
+  .chart-wrap-tall {
+    height: 240px !important
+  }
+
+  /* Rank bar */
+  .rank-bar-wrap {
+    width: 60px
+  }
+
+  /* Period select */
+  .period-select {
+    font-size: 11px;
+    padding: 5px 8px
+  }
+}
+
+/* ============================= */
+/* RESPONSIVE — MOBILE (≤480px) */
+/* ============================= */
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem
+  }
+
   .grid-3,
   .grid-4 {
     grid-template-columns: 1fr
   }
 
-  .container {
-    padding: 1rem
-  }
-
-  nav {
-    padding: 0 1rem
-  }
-
+  /* Nav: hide text, show logo only on very small */
   .nav-brand {
+    gap: 6px;
+    margin-right: 0.5rem
+  }
+
+  .nav-brand-text {
+    font-size: 11px
+  }
+
+  .nav-brand-sub {
+    display: none
+  }
+
+  .nav-brand img {
+    width: 26px;
+    height: 26px
+  }
+
+  .nav-links a {
+    padding: 10px 8px;
+    font-size: 11px
+  }
+
+  /* Hero icon smaller */
+  .hero-icon {
+    width: 48px !important;
+    height: 48px !important
+  }
+
+  .hero-icon img {
+    width: 40px !important;
+    height: 40px !important
+  }
+
+  .hero h1 {
+    font-size: 16px !important
+  }
+
+  .hero p {
+    font-size: 12px !important
+  }
+
+  /* Page title */
+  .page-title {
+    font-size: 16px
+  }
+
+  .page-sub {
+    font-size: 12px;
+    margin-bottom: 1rem
+  }
+
+  /* Card */
+  .card {
+    padding: 1rem;
+    border-radius: var(--radius)
+  }
+
+  .card-title {
     font-size: 13px
+  }
+
+  /* Score buttons on very small screens */
+  .score-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
+    border-radius: 6px
+  }
+
+  /* Form styling */
+  input[type="text"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px;
+    padding: 10px 12px
+  }
+
+  /* Button full width */
+  .btn-lg {
+    width: 100%;
+    justify-content: center
+  }
+
+  /* Nav button row: stack */
+  div[style*="justify-content:space-between"] {
+    flex-direction: column !important;
+    gap: 8px !important
+  }
+
+  div[style*="justify-content:space-between"] .btn {
+    width: 100%;
+    justify-content: center
+  }
+
+  div[style*="justify-content:flex-end"] {
+    justify-content: stretch !important
+  }
+
+  div[style*="justify-content:flex-end"] .btn {
+    width: 100%;
+    justify-content: center
+  }
+
+  /* Recent row */
+  .recent-row {
+    gap: 8px
+  }
+
+  .rr-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 10px
+  }
+
+  .rr-name {
+    font-size: 12px
+  }
+
+  /* Rank row */
+  .rank-name {
+    font-size: 12px
+  }
+
+  .rank-bar-wrap {
+    width: 50px
+  }
+
+  /* Chart */
+  .chart-wrap {
+    height: 180px !important
+  }
+
+  .chart-wrap-tall {
+    height: 220px !important
+  }
+
+  .chart-title {
+    font-size: 12px
+  }
+
+  /* Toast */
+  .toast {
+    font-size: 12px;
+    padding: 8px 12px
+  }
+
+  /* Preview sections */
+  .total-val {
+    font-size: 28px !important
+  }
+
+  /* Info card at bottom of index */
+  code {
+    font-size: 10px !important
+  }
+
+  /* Action buttons row on rekap */
+  div[style*="display:flex;gap:8px;flex-wrap:wrap"] {
+    width: 100%
+  }
+
+  div[style*="display:flex;gap:8px;flex-wrap:wrap"] .btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 0
+  }
+
+  /* Dashboard top row */
+  .top-row {
+    flex-direction: column !important;
+    align-items: stretch !important
+  }
+
+  .top-row > div[style*="display:flex;gap:8px"] {
+    flex-wrap: wrap !important
+  }
+
+  .top-row .period-select {
+    flex: 1;
+    min-width: 0
   }
 }
 
