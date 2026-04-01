@@ -1,206 +1,342 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Supervisi Keperawatan RS</title>
-<link rel="stylesheet" href="style.css">
-<style>
-.hero{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);
-  padding:2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1.5rem}
-.hero-icon{width:56px;height:56px;background:var(--blue-light);border-radius:var(--radius-lg);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.hero h1{font-size:22px;font-weight:700;color:var(--text);line-height:1.2}
-.hero p{font-size:13px;color:var(--text-sec);margin-top:4px}
-.quick-btn{display:flex;align-items:center;gap:10px;padding:1rem 1.25rem;
-  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);
-  text-decoration:none;color:var(--text);transition:all .15s;cursor:pointer}
-.quick-btn:hover{border-color:var(--blue-mid);background:var(--blue-light)}
-.quick-btn:hover .qb-icon{background:var(--blue);color:#fff}
-.qb-icon{width:40px;height:40px;border-radius:var(--radius);background:var(--bg2);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
-.qb-title{font-size:13px;font-weight:600;color:var(--text)}
-.qb-sub{font-size:11px;color:var(--text-sec);margin-top:2px}
-.recent-row{display:flex;align-items:center;gap:10px;padding:10px 0;
-  border-bottom:1px solid var(--border)}
-.recent-row:last-child{border-bottom:none}
-.rr-avatar{width:32px;height:32px;border-radius:50%;background:var(--blue-light);
-  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;
-  color:var(--blue);flex-shrink:0}
-.rr-name{font-size:13px;font-weight:500;color:var(--text)}
-.rr-meta{font-size:11px;color:var(--text-sec);margin-top:1px}
-.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text-sec)}
-.empty-state svg{margin-bottom:.75rem;opacity:.4}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Supervisi Keperawatan RS</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hero {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem
+    }
+
+    .hero-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--blue-light);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .hero h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2
+    }
+
+    .hero p {
+      font-size: 13px;
+      color: var(--text-sec);
+      margin-top: 4px
+    }
+
+    .quick-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 1rem 1.25rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      text-decoration: none;
+      color: var(--text);
+      transition: all .15s;
+      cursor: pointer
+    }
+
+    .quick-btn:hover {
+      border-color: var(--blue-mid);
+      background: var(--blue-light)
+    }
+
+    .quick-btn:hover .qb-icon {
+      background: var(--blue);
+      color: #fff
+    }
+
+    .qb-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      background: var(--bg2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all .15s
+    }
+
+    .qb-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .qb-sub {
+      font-size: 11px;
+      color: var(--text-sec);
+      margin-top: 2px
+    }
+
+    .recent-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .recent-row:last-child {
+      border-bottom: none
+    }
+
+    .rr-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--blue);
+      flex-shrink: 0
+    }
+
+    .rr-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text)
+    }
+
+    .rr-meta {
+      font-size: 11px;
+      color: var(--text-sec);
+      margin-top: 1px
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--text-sec)
+    }
+
+    .empty-state svg {
+      margin-bottom: .75rem;
+      opacity: .4
+    }
+  </style>
 </head>
+
 <body>
-<nav>
-  <div class="nav-brand">Supervisi <span>RS</span></div>
-  <div class="nav-links">
-    <a href="index.html" class="active">Beranda</a>
-    <a href="form.html">Formulir</a>
-    <a href="rekap.html">Rekap</a>
-    <a href="dashboard.html">Dashboard</a>
-  </div>
-</nav>
-
-<div class="container">
-  <div class="hero">
-    <div class="hero-icon">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-      </svg>
-    </div>
-    <div>
-      <h1 id="rs-name">Supervisi Keperawatan Rawat Inap</h1>
-      <p id="rs-sub">Sistem pencatatan & pelaporan supervisi berbasis Google Sheets</p>
-    </div>
-    <div style="margin-left:auto;text-align:right;flex-shrink:0">
-      <div id="today-date" style="font-size:13px;color:var(--text-sec)"></div>
-      <div id="stat-bulan" style="font-size:22px;font-weight:700;color:var(--text);line-height:1.2;margin-top:2px">–</div>
-      <div style="font-size:11px;color:var(--text-sec)">supervisi bulan ini</div>
-    </div>
-  </div>
-
-  <div id="toast-area"></div>
-
-  <div class="grid-4" style="margin-bottom:1.5rem" id="stat-cards">
-    <div class="stat-card">
-      <div class="stat-label">Total Supervisi</div>
-      <div class="stat-value" id="s-total">–</div>
-      <div class="stat-sub">semua periode</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Rata-rata Skor</div>
-      <div class="stat-value" id="s-rata">–</div>
-      <div class="stat-sub">bulan ini</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Ruangan Aktif</div>
-      <div class="stat-value" id="s-ruangan">–</div>
-      <div class="stat-sub">disupervisi</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Kategori Dominan</div>
-      <div class="stat-value" id="s-kategori" style="font-size:16px">–</div>
-      <div class="stat-sub" id="s-kategori-sub">–</div>
-    </div>
-  </div>
-
-  <div class="grid-2" style="margin-bottom:1.5rem">
-    <div>
-      <div style="font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Akses Cepat</div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <a href="form.html" class="quick-btn">
-          <div class="qb-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-          </div>
-          <div>
-            <div class="qb-title">Isi Formulir Supervisi Baru</div>
-            <div class="qb-sub">Mulai sesi penilaian untuk Karu atau Perawat Pelaksana</div>
-          </div>
-        </a>
-        <a href="rekap.html" class="quick-btn">
-          <div class="qb-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-            </svg>
-          </div>
-          <div>
-            <div class="qb-title">Lihat Rekap & Riwayat</div>
-            <div class="qb-sub">Tabel semua sesi supervisi, filter & ekspor PDF</div>
-          </div>
-        </a>
-        <a href="dashboard.html" class="quick-btn">
-          <div class="qb-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-          </div>
-          <div>
-            <div class="qb-title">Dashboard Analitik</div>
-            <div class="qb-sub">Grafik tren, radar aspek, perbandingan ruangan</div>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Supervisi Terakhir</div>
-      <div id="recent-list">
-        <div class="empty-state" id="empty-recent">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <div style="font-size:13px;margin-top:4px">Belum ada data supervisi</div>
-          <div style="font-size:11px;margin-top:2px">Mulai dengan mengisi formulir pertama</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card" style="background:var(--blue-light);border-color:var(--blue)">
-    <div style="display:flex;align-items:flex-start;gap:12px">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+  <nav>
+    <a href="index.html" class="nav-brand">
+      <img src="https://medikakaryaairlangga.com/about/assets/logo_rsunair.png" alt="Logo RS Unair">
       <div>
-        <div style="font-size:13px;font-weight:600;color:var(--blue);margin-bottom:3px">Pengaturan awal — wajib dilakukan</div>
-        <div style="font-size:12px;color:#0C447C;line-height:1.6">
-          Buka file <code style="background:rgba(24,95,165,.15);padding:1px 5px;border-radius:3px;font-size:11px">config.js</code> 
-          dan ganti nilai <code style="background:rgba(24,95,165,.15);padding:1px 5px;border-radius:3px;font-size:11px">APPS_SCRIPT_URL</code> 
-          dengan URL Web App Google Apps Script Anda. Lihat file <code style="background:rgba(24,95,165,.15);padding:1px 5px;border-radius:3px;font-size:11px">Code.gs</code> 
-          untuk panduan lengkap pembuatan Apps Script.
+        <div class="nav-brand-text">Supervisi Keperawatan</div>
+        <div class="nav-brand-sub">RS UNAIR</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Beranda</a>
+      <a href="form.html">Formulir</a>
+      <a href="rekap.html">Rekap</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="hero">
+      <div class="hero-icon">
+        <img src="https://medikakaryaairlangga.com/about/assets/logo_rsunair.png" alt="Logo RS Unair"
+          style="width:48px;height:48px;object-fit:contain">
+      </div>
+      <div>
+        <h1 id="rs-name">Supervisi Keperawatan Rawat Inap</h1>
+        <p id="rs-sub">Sistem pencatatan & pelaporan supervisi berbasis Google Sheets</p>
+      </div>
+      <div style="margin-left:auto;text-align:right;flex-shrink:0">
+        <div id="today-date" style="font-size:13px;color:var(--text-sec)"></div>
+        <div id="stat-bulan" style="font-size:22px;font-weight:700;color:var(--text);line-height:1.2;margin-top:2px">–
+        </div>
+        <div style="font-size:11px;color:var(--text-sec)">supervisi bulan ini</div>
+      </div>
+    </div>
+
+    <div id="toast-area"></div>
+
+    <div class="grid-4" style="margin-bottom:1.5rem" id="stat-cards">
+      <div class="stat-card">
+        <div class="stat-label">Total Supervisi</div>
+        <div class="stat-value" id="s-total">–</div>
+        <div class="stat-sub">semua periode</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rata-rata Skor</div>
+        <div class="stat-value" id="s-rata">–</div>
+        <div class="stat-sub">bulan ini</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ruangan Aktif</div>
+        <div class="stat-value" id="s-ruangan">–</div>
+        <div class="stat-sub">disupervisi</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Kategori Dominan</div>
+        <div class="stat-value" id="s-kategori" style="font-size:16px">–</div>
+        <div class="stat-sub" id="s-kategori-sub">–</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:1.5rem">
+      <div>
+        <div
+          style="font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">
+          Akses Cepat</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <a href="form.html" class="quick-btn">
+            <div class="qb-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+            </div>
+            <div>
+              <div class="qb-title">Isi Formulir Supervisi Baru</div>
+              <div class="qb-sub">Mulai sesi penilaian untuk Karu atau Perawat Pelaksana</div>
+            </div>
+          </a>
+          <a href="rekap.html" class="quick-btn">
+            <div class="qb-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
+            </div>
+            <div>
+              <div class="qb-title">Lihat Rekap & Riwayat</div>
+              <div class="qb-sub">Tabel semua sesi supervisi, filter & ekspor PDF</div>
+            </div>
+          </a>
+          <a href="dashboard.html" class="quick-btn">
+            <div class="qb-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="qb-title">Dashboard Analitik</div>
+              <div class="qb-sub">Grafik tren, radar aspek, perbandingan ruangan</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Supervisi Terakhir</div>
+        <div id="recent-list">
+          <div class="empty-state" id="empty-recent">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <div style="font-size:13px;margin-top:4px">Belum ada data supervisi</div>
+            <div style="font-size:11px;margin-top:2px">Mulai dengan mengisi formulir pertama</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="background:var(--blue-light);border-color:var(--blue)">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="2"
+          stroke-linecap="round" style="flex-shrink:0;margin-top:1px">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--blue);margin-bottom:3px">Pengaturan awal — wajib
+            dilakukan</div>
+          <div style="font-size:12px;color:#0C447C;line-height:1.6">
+            Buka file <code
+              style="background:rgba(24,95,165,.15);padding:1px 5px;border-radius:3px;font-size:11px">config.js</code>
+            dan ganti nilai <code
+              style="background:rgba(24,95,165,.15);padding:1px 5px;border-radius:3px;font-size:11px">APPS_SCRIPT_URL</code>
+            dengan URL Web App Google Apps Script Anda. Lihat file <code
+              style="background:rgba(24,95,165,.15);padding:1px 5px;border-radius:3px;font-size:11px">Code.gs</code>
+            untuk panduan lengkap pembuatan Apps Script.
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script src="config.js"></script>
-<script>
-document.getElementById('rs-name').textContent = CONFIG.APP_NAME;
-document.getElementById('rs-sub').textContent = CONFIG.RS_NAME + ' — Sistem supervisi digital';
+  <script src="config.js"></script>
+  <script>
+    document.getElementById('rs-name').textContent = CONFIG.APP_NAME;
+    document.getElementById('rs-sub').textContent = CONFIG.RS_NAME + ' — Sistem supervisi digital';
 
-const now = new Date();
-document.getElementById('today-date').textContent = now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    const now = new Date();
+    document.getElementById('today-date').textContent = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-function loadStats() {
-  const data = ambilLokal();
-  const bulanIni = now.getMonth();
-  const tahunIni = now.getFullYear();
-  const dataBulan = data.filter(d => {
-    const t = new Date(d.tanggal);
-    return t.getMonth() === bulanIni && t.getFullYear() === tahunIni;
-  });
+    function loadStats() {
+      const data = ambilLokal();
+      const bulanIni = now.getMonth();
+      const tahunIni = now.getFullYear();
+      const dataBulan = data.filter(d => {
+        const t = new Date(d.tanggal);
+        return t.getMonth() === bulanIni && t.getFullYear() === tahunIni;
+      });
 
-  document.getElementById('s-total').textContent = data.length;
-  document.getElementById('stat-bulan').textContent = dataBulan.length;
+      document.getElementById('s-total').textContent = data.length;
+      document.getElementById('stat-bulan').textContent = dataBulan.length;
 
-  if (dataBulan.length) {
-    const avg = Math.round(dataBulan.reduce((a,b) => a + b.skor_total, 0) / dataBulan.length);
-    document.getElementById('s-rata').textContent = avg + '%';
-    const kat = getKategori(avg);
-    document.getElementById('s-kategori').textContent = kat.label;
-  }
+      if (dataBulan.length) {
+        const avg = Math.round(dataBulan.reduce((a, b) => a + b.skor_total, 0) / dataBulan.length);
+        document.getElementById('s-rata').textContent = avg + '%';
+        const kat = getKategori(avg);
+        document.getElementById('s-kategori').textContent = kat.label;
+      }
 
-  const ruangan = [...new Set(data.map(d => d.ruangan))];
-  document.getElementById('s-ruangan').textContent = ruangan.length;
+      const ruangan = [...new Set(data.map(d => d.ruangan))];
+      document.getElementById('s-ruangan').textContent = ruangan.length;
 
-  const cats = {};
-  data.forEach(d => { cats[d.kategori] = (cats[d.kategori]||0)+1; });
-  const dom = Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
-  if (dom) {
-    document.getElementById('s-kategori').textContent = dom[0];
-    document.getElementById('s-kategori-sub').textContent = dom[1] + ' sesi';
-  }
+      const cats = {};
+      data.forEach(d => { cats[d.kategori] = (cats[d.kategori] || 0) + 1; });
+      const dom = Object.entries(cats).sort((a, b) => b[1] - a[1])[0];
+      if (dom) {
+        document.getElementById('s-kategori').textContent = dom[0];
+        document.getElementById('s-kategori-sub').textContent = dom[1] + ' sesi';
+      }
 
-  const list = document.getElementById('recent-list');
-  const recent = data.slice(0, 5);
-  if (recent.length) {
-    document.getElementById('empty-recent')?.remove();
-    list.innerHTML = recent.map(d => {
-      const inisial = d.nama_perawat.split(' ').slice(1,3).map(w=>w[0]).join('').toUpperCase().slice(0,2);
-      const kat = getKategori(d.skor_total);
-      return `<div class="recent-row">
+      const list = document.getElementById('recent-list');
+      const recent = data.slice(0, 5);
+      if (recent.length) {
+        document.getElementById('empty-recent')?.remove();
+        list.innerHTML = recent.map(d => {
+          const inisial = d.nama_perawat.split(' ').slice(1, 3).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+          const kat = getKategori(d.skor_total);
+          return `<div class="recent-row">
         <div class="rr-avatar">${inisial}</div>
         <div style="flex:1">
           <div class="rr-name">${d.nama_perawat}</div>
@@ -208,19 +344,20 @@ function loadStats() {
         </div>
         <span class="badge ${kat.cls}">${d.skor_total}%</span>
       </div>`;
-    }).join('');
-  }
+        }).join('');
+      }
 
-  // Coba fetch dari Sheets jika URL sudah diset
-  if (CONFIG.APPS_SCRIPT_URL.includes('GANTI')) return;
-  fetch(CONFIG.APPS_SCRIPT_URL + '?action=getStats')
-    .then(r => r.json())
-    .then(res => {
-      if (res.total !== undefined) document.getElementById('s-total').textContent = res.total;
-    }).catch(() => {});
-}
+      // Coba fetch dari Sheets jika URL sudah diset
+      if (CONFIG.APPS_SCRIPT_URL.includes('GANTI')) return;
+      fetch(CONFIG.APPS_SCRIPT_URL + '?action=getStats')
+        .then(r => r.json())
+        .then(res => {
+          if (res.total !== undefined) document.getElementById('s-total').textContent = res.total;
+        }).catch(() => { });
+    }
 
-loadStats();
-</script>
+    loadStats();
+  </script>
 </body>
+
 </html>

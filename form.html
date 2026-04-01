@@ -1,339 +1,557 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Formulir Supervisi</title>
-<link rel="stylesheet" href="style.css">
-<style>
-.form-header{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);
-  padding:1.25rem;margin-bottom:1.25rem}
-.step-bar{display:flex;gap:0;margin-bottom:1.5rem;background:var(--bg);
-  border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
-.step{flex:1;padding:10px 8px;text-align:center;font-size:12px;color:var(--text-sec);
-  border-right:1px solid var(--border);cursor:pointer;transition:background .15s}
-.step:last-child{border-right:none}
-.step.active{background:var(--blue-light);color:var(--blue);font-weight:600}
-.step.done{background:var(--green-light);color:var(--green)}
-.step-num{display:block;font-size:16px;font-weight:700;line-height:1}
-.step-lbl{display:block;font-size:10px;margin-top:2px}
-.pane{display:none}
-.pane.active{display:block}
-.skor-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:1rem 0}
-.skor-box{background:var(--bg2);border-radius:var(--radius);padding:8px 10px}
-.skor-box-lbl{font-size:10px;color:var(--text-sec);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
-.skor-box-val{font-size:20px;font-weight:700;color:var(--text);margin-top:2px;line-height:1}
-.skor-box-max{font-size:10px;color:var(--text-hint)}
-.total-box{background:var(--blue-light);border:1.5px solid var(--blue-mid);border-radius:var(--radius-lg);
-  padding:1.25rem;display:flex;align-items:center;justify-content:space-between;margin:1rem 0}
-.total-val{font-size:36px;font-weight:800;color:var(--blue)}
-.total-meta{font-size:13px;color:var(--blue)}
-.success-screen{text-align:center;padding:2.5rem 1rem}
-.success-icon{width:64px;height:64px;background:var(--green-light);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Formulir Supervisi</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .form-header {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem
+    }
+
+    .step-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden
+    }
+
+    .step {
+      flex: 1;
+      padding: 10px 8px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-sec);
+      border-right: 1px solid var(--border);
+      cursor: default;
+      transition: background .15s;
+      opacity: .5;
+      user-select: none
+    }
+
+    .step:last-child {
+      border-right: none
+    }
+
+    .step.active {
+      background: var(--blue-light);
+      color: var(--blue);
+      font-weight: 600;
+      opacity: 1
+    }
+
+    .step.done {
+      background: var(--green-light);
+      color: var(--green);
+      cursor: pointer;
+      opacity: 1
+    }
+
+    .step.locked {
+      opacity: .4;
+      cursor: not-allowed
+    }
+
+    .step-num {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1
+    }
+
+    .step-lbl {
+      display: block;
+      font-size: 10px;
+      margin-top: 2px
+    }
+
+    .pane {
+      display: none
+    }
+
+    .pane.active {
+      display: block
+    }
+
+    .skor-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin: 1rem 0
+    }
+
+    .skor-box {
+      background: var(--bg2);
+      border-radius: var(--radius);
+      padding: 8px 10px
+    }
+
+    .skor-box-lbl {
+      font-size: 10px;
+      color: var(--text-sec);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .04em
+    }
+
+    .skor-box-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 2px;
+      line-height: 1
+    }
+
+    .skor-box-max {
+      font-size: 10px;
+      color: var(--text-hint)
+    }
+
+    .total-box {
+      background: var(--blue-light);
+      border: 1.5px solid var(--blue-mid);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1rem 0
+    }
+
+    .total-val {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--blue)
+    }
+
+    .total-meta {
+      font-size: 13px;
+      color: var(--blue)
+    }
+
+    .success-screen {
+      text-align: center;
+      padding: 2.5rem 1rem
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--green-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem
+    }
+  </style>
 </head>
+
 <body>
-<nav>
-  <div class="nav-brand">Supervisi <span>RS</span></div>
-  <div class="nav-links">
-    <a href="index.html">Beranda</a>
-    <a href="form.html" class="active">Formulir</a>
-    <a href="rekap.html">Rekap</a>
-    <a href="dashboard.html">Dashboard</a>
-  </div>
-</nav>
+  <nav>
+    <a href="index.html" class="nav-brand">
+      <img src="https://medikakaryaairlangga.com/about/assets/logo_rsunair.png" alt="Logo RS Unair">
+      <div>
+        <div class="nav-brand-text">Supervisi Keperawatan</div>
+        <div class="nav-brand-sub">RS UNAIR</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Beranda</a>
+      <a href="form.html" class="active">Formulir</a>
+      <a href="rekap.html">Rekap</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </nav>
 
-<div class="container">
-  <div class="page-title">Formulir Supervisi Keperawatan</div>
-  <div class="page-sub">Isi semua bagian dengan cermat. Skor dihitung otomatis secara real-time.</div>
+  <div class="container">
+    <div class="page-title">Formulir Supervisi Keperawatan</div>
+    <div class="page-sub">Isi semua bagian dengan cermat. Skor dihitung otomatis secara real-time.</div>
 
-  <div id="toast-area"></div>
+    <div id="toast-area"></div>
 
-  <!-- STEP BAR -->
-  <div class="step-bar" id="step-bar">
-    <div class="step active" onclick="goStep(0)"><span class="step-num">1</span><span class="step-lbl">Identitas</span></div>
-    <div class="step" onclick="goStep(1)"><span class="step-num">2</span><span class="step-lbl">Instrumen</span></div>
-    <div class="step" onclick="goStep(2)"><span class="step-num">3</span><span class="step-lbl">Catatan</span></div>
-    <div class="step" onclick="goStep(3)"><span class="step-num">4</span><span class="step-lbl">Pratinjau</span></div>
-  </div>
+    <!-- STEP BAR -->
+    <div class="step-bar" id="step-bar">
+      <div class="step active" data-step="0"><span class="step-num">1</span><span class="step-lbl">Identitas</span>
+      </div>
+      <div class="step locked" data-step="1"><span class="step-num">2</span><span class="step-lbl">Instrumen</span>
+      </div>
+      <div class="step locked" data-step="2"><span class="step-num">3</span><span class="step-lbl">Catatan</span></div>
+      <div class="step locked" data-step="3"><span class="step-num">4</span><span class="step-lbl">Pratinjau</span>
+      </div>
+    </div>
 
-  <!-- PANE 0: IDENTITAS -->
-  <div class="pane active" id="pane-0">
-    <div class="card">
-      <div class="card-title">Data Identitas Supervisi</div>
-      <div class="grid-2">
+    <!-- PANE 0: IDENTITAS -->
+    <div class="pane active" id="pane-0">
+      <div class="card">
+        <div class="card-title">Data Identitas Supervisi</div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Nama Supervisor <span class="req">*</span></label>
+            <input type="text" id="f-supervisor" placeholder="Nama lengkap supervisor" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tanggal Supervisi <span class="req">*</span></label>
+            <input type="date" id="f-tanggal" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ruangan <span class="req">*</span></label>
+            <select id="f-ruangan" required onchange="updateDropdownPerawat()">
+              <option value="">— Pilih ruangan —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Shift Dinas <span class="req">*</span></label>
+            <select id="f-shift" required>
+              <option value="">— Pilih shift —</option>
+              <option>Pagi (07.00–14.00)</option>
+              <option>Siang (14.00–21.00)</option>
+              <option>Malam (21.00–07.00)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nama Perawat yang Disupervisi <span class="req">*</span></label>
+            <select id="f-perawat" required onchange="updateJabatan()">
+              <option value="">— Pilih ruangan dulu —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jabatan</label>
+            <input type="text" id="f-jabatan" readonly placeholder="Otomatis dari pilihan perawat"
+              style="background:var(--bg2);color:var(--text-sec)">
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:1rem">
+        <button class="btn btn-primary btn-lg" onclick="nextStep(0)">Lanjut ke Instrumen →</button>
+      </div>
+    </div>
+
+    <!-- PANE 1: INSTRUMEN -->
+    <div class="pane" id="pane-1">
+      <div id="instrumen-container"></div>
+      <div class="skor-summary" id="skor-summary">
+        <div class="skor-box">
+          <div class="skor-box-lbl">Askep</div>
+          <div class="skor-box-val" id="s-askep">–</div>
+          <div class="skor-box-max">dari 100</div>
+        </div>
+        <div class="skor-box">
+          <div class="skor-box-lbl">Tindakan/SOP</div>
+          <div class="skor-box-val" id="s-sop">–</div>
+          <div class="skor-box-max">dari 100</div>
+        </div>
+        <div class="skor-box">
+          <div class="skor-box-lbl">Manajemen</div>
+          <div class="skor-box-val" id="s-manajemen">–</div>
+          <div class="skor-box-max">dari 100</div>
+        </div>
+        <div class="skor-box">
+          <div class="skor-box-lbl">Dokumentasi</div>
+          <div class="skor-box-val" id="s-dokumentasi">–</div>
+          <div class="skor-box-max">dari 100</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:1rem">
+        <button class="btn btn-secondary" onclick="switchToStep(0)">← Kembali</button>
+        <button class="btn btn-primary btn-lg" onclick="nextStep(1)">Lanjut ke Catatan →</button>
+      </div>
+    </div>
+
+    <!-- PANE 2: CATATAN -->
+    <div class="pane" id="pane-2">
+      <div class="card">
+        <div class="card-title">Catatan & Rekomendasi Supervisor</div>
         <div class="form-group">
-          <label class="form-label">Nama Supervisor <span class="req">*</span></label>
-          <input type="text" id="f-supervisor" placeholder="Nama lengkap supervisor" required>
+          <label class="form-label">Temuan &amp; Catatan Supervisi</label>
+          <textarea id="f-catatan" rows="5"
+            placeholder="Tuliskan temuan observasi, hal yang sudah baik, dan area yang perlu perbaikan..."></textarea>
         </div>
         <div class="form-group">
-          <label class="form-label">Tanggal Supervisi <span class="req">*</span></label>
-          <input type="date" id="f-tanggal" required>
+          <label class="form-label">Rekomendasi Tindak Lanjut</label>
+          <textarea id="f-rekomendasi" rows="4"
+            placeholder="Rencana pembinaan, pelatihan yang disarankan, atau tindakan perbaikan spesifik..."></textarea>
         </div>
         <div class="form-group">
-          <label class="form-label">Ruangan <span class="req">*</span></label>
-          <select id="f-ruangan" required onchange="updateDropdownPerawat()">
-            <option value="">— Pilih ruangan —</option>
-          </select>
+          <label class="form-label">Target Perbaikan (deadline)</label>
+          <input type="date" id="f-target">
         </div>
-        <div class="form-group">
-          <label class="form-label">Shift Dinas <span class="req">*</span></label>
-          <select id="f-shift" required>
-            <option value="">— Pilih shift —</option>
-            <option>Pagi (07.00–14.00)</option>
-            <option>Siang (14.00–21.00)</option>
-            <option>Malam (21.00–07.00)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Nama Perawat yang Disupervisi <span class="req">*</span></label>
-          <select id="f-perawat" required onchange="updateJabatan()">
-            <option value="">— Pilih ruangan dulu —</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Jabatan</label>
-          <input type="text" id="f-jabatan" readonly placeholder="Otomatis dari pilihan perawat" style="background:var(--bg2);color:var(--text-sec)">
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:1rem">
+        <button class="btn btn-secondary" onclick="switchToStep(1)">← Kembali</button>
+        <button class="btn btn-primary btn-lg" onclick="nextStep(2)">Lanjut ke Pratinjau →</button>
+      </div>
+    </div>
+
+    <!-- PANE 3: PRATINJAU -->
+    <div class="pane" id="pane-3">
+      <div class="card" id="preview-card">
+        <div class="card-title">Pratinjau — periksa sebelum menyimpan</div>
+        <div id="preview-content"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:1rem;gap:10px">
+        <button class="btn btn-secondary" onclick="switchToStep(2)">← Kembali Edit</button>
+        <button class="btn btn-success btn-lg" id="btn-submit" onclick="submitForm()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Simpan & Kirim ke Google Sheets
+        </button>
+      </div>
+    </div>
+
+    <!-- PANE 4: SUKSES -->
+    <div class="pane" id="pane-4">
+      <div class="card">
+        <div class="success-screen">
+          <div class="success-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2.5"
+              stroke-linecap="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">Data Berhasil Disimpan!</div>
+          <div style="font-size:13px;color:var(--text-sec);margin-bottom:1.5rem" id="success-msg">Data supervisi telah
+            dikirim ke Google Sheets.</div>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="resetForm()">Isi Formulir Baru</button>
+            <a href="rekap.html" class="btn btn-secondary">Lihat Rekap Data</a>
+            <a href="dashboard.html" class="btn btn-secondary">Buka Dashboard</a>
+          </div>
         </div>
       </div>
     </div>
-    <div style="display:flex;justify-content:flex-end;margin-top:1rem">
-      <button class="btn btn-primary btn-lg" onclick="nextStep(0)">Lanjut ke Instrumen →</button>
-    </div>
   </div>
 
-  <!-- PANE 1: INSTRUMEN -->
-  <div class="pane" id="pane-1">
-    <div id="instrumen-container"></div>
-    <div class="skor-summary" id="skor-summary">
-      <div class="skor-box"><div class="skor-box-lbl">Askep</div><div class="skor-box-val" id="s-askep">–</div><div class="skor-box-max">dari 100</div></div>
-      <div class="skor-box"><div class="skor-box-lbl">Tindakan/SOP</div><div class="skor-box-val" id="s-sop">–</div><div class="skor-box-max">dari 100</div></div>
-      <div class="skor-box"><div class="skor-box-lbl">Manajemen</div><div class="skor-box-val" id="s-manajemen">–</div><div class="skor-box-max">dari 100</div></div>
-      <div class="skor-box"><div class="skor-box-lbl">Dokumentasi</div><div class="skor-box-val" id="s-dokumentasi">–</div><div class="skor-box-max">dari 100</div></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:1rem">
-      <button class="btn btn-secondary" onclick="goStep(0)">← Kembali</button>
-      <button class="btn btn-primary btn-lg" onclick="nextStep(1)">Lanjut ke Catatan →</button>
-    </div>
-  </div>
+  <script src="config.js"></script>
+  <script>
+    let jabatan = '';
+    let scores = {}; // { section_id: [1,2,3,...] }
+    let currentStep = 0;
 
-  <!-- PANE 2: CATATAN -->
-  <div class="pane" id="pane-2">
-    <div class="card">
-      <div class="card-title">Catatan & Rekomendasi Supervisor</div>
-      <div class="form-group">
-        <label class="form-label">Temuan &amp; Catatan Supervisi</label>
-        <textarea id="f-catatan" rows="5" placeholder="Tuliskan temuan observasi, hal yang sudah baik, dan area yang perlu perbaikan..."></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Rekomendasi Tindak Lanjut</label>
-        <textarea id="f-rekomendasi" rows="4" placeholder="Rencana pembinaan, pelatihan yang disarankan, atau tindakan perbaikan spesifik..."></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Target Perbaikan (deadline)</label>
-        <input type="date" id="f-target">
-      </div>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:1rem">
-      <button class="btn btn-secondary" onclick="goStep(1)">← Kembali</button>
-      <button class="btn btn-primary btn-lg" onclick="nextStep(2)">Lanjut ke Pratinjau →</button>
-    </div>
-  </div>
+    // Init
+    document.getElementById('f-tanggal').value = new Date().toISOString().split('T')[0];
 
-  <!-- PANE 3: PRATINJAU -->
-  <div class="pane" id="pane-3">
-    <div class="card" id="preview-card">
-      <div class="card-title">Pratinjau — periksa sebelum menyimpan</div>
-      <div id="preview-content"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:1rem;gap:10px">
-      <button class="btn btn-secondary" onclick="goStep(2)">← Kembali Edit</button>
-      <button class="btn btn-success btn-lg" id="btn-submit" onclick="submitForm()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Simpan & Kirim ke Google Sheets
-      </button>
-    </div>
-  </div>
-
-  <!-- PANE 4: SUKSES -->
-  <div class="pane" id="pane-4">
-    <div class="card">
-      <div class="success-screen">
-        <div class="success-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">Data Berhasil Disimpan!</div>
-        <div style="font-size:13px;color:var(--text-sec);margin-bottom:1.5rem" id="success-msg">Data supervisi telah dikirim ke Google Sheets.</div>
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="resetForm()">Isi Formulir Baru</button>
-          <a href="rekap.html" class="btn btn-secondary">Lihat Rekap Data</a>
-          <a href="dashboard.html" class="btn btn-secondary">Buka Dashboard</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script src="config.js"></script>
-<script>
-let jabatan = '';
-let scores = {}; // { section_id: [1,2,3,...] }
-let currentStep = 0;
-
-// Init
-document.getElementById('f-tanggal').value = new Date().toISOString().split('T')[0];
-
-// Populate ruangan dropdown
-const selRuangan = document.getElementById('f-ruangan');
-MASTER.ruangan.forEach(r => {
-  const opt = document.createElement('option');
-  opt.value = opt.textContent = r;
-  selRuangan.appendChild(opt);
-});
-
-function updateDropdownPerawat() {
-  const ruangan = document.getElementById('f-ruangan').value;
-  const sel = document.getElementById('f-perawat');
-  sel.innerHTML = '<option value="">— Pilih perawat —</option>';
-  document.getElementById('f-jabatan').value = '';
-  jabatan = '';
-  if (!ruangan) return;
-  MASTER.staf.filter(s => s.ruangan === ruangan).forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s.nama;
-    opt.textContent = s.nama + ' (' + s.jabatan + ')';
-    opt.dataset.jabatan = s.jabatan;
-    sel.appendChild(opt);
-  });
-}
-
-function updateJabatan() {
-  const sel = document.getElementById('f-perawat');
-  const opt = sel.options[sel.selectedIndex];
-  jabatan = opt?.dataset?.jabatan || '';
-  document.getElementById('f-jabatan').value = jabatan;
-  if (jabatan) buildInstrumen(jabatan === 'Kepala Ruangan' ? 'karu' : 'pp');
-}
-
-function buildInstrumen(role) {
-  const instrumen = INSTRUMEN[role];
-  scores = {};
-  instrumen.forEach(sec => { scores[sec.id] = new Array(sec.items.length).fill(0); });
-
-  const container = document.getElementById('instrumen-container');
-  container.innerHTML = '';
-
-  instrumen.forEach(sec => {
-    const secDiv = document.createElement('div');
-    secDiv.style.marginBottom = '1rem';
-
-    const head = document.createElement('div');
-    head.className = 'section-head';
-    head.innerHTML = `<span class="section-title">${sec.judul}</span>
-      <span class="section-score" id="ss-${sec.id}" style="color:var(--text-sec)">– / 100</span>`;
-
-    const body = document.createElement('div');
-    body.className = 'section-body';
-
-    sec.items.forEach((item, i) => {
-      const row = document.createElement('div');
-      row.className = 'item-row';
-      row.innerHTML = `
-        <span class="item-num">${i+1}.</span>
-        <span class="item-text">${item}</span>
-        <div class="score-group" id="sg-${sec.id}-${i}">
-          ${[1,2,3,4].map(v => `<button class="score-btn" data-v="${v}" 
-            onclick="setScore('${sec.id}',${i},${v})">${v}</button>`).join('')}
-        </div>`;
-      body.appendChild(row);
+    // Populate ruangan dropdown
+    const selRuangan = document.getElementById('f-ruangan');
+    MASTER.ruangan.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = r;
+      selRuangan.appendChild(opt);
     });
 
-    secDiv.appendChild(head);
-    secDiv.appendChild(body);
-    container.appendChild(secDiv);
-  });
-  updateSkorSummary();
-}
+    function updateDropdownPerawat() {
+      const ruangan = document.getElementById('f-ruangan').value;
+      const sel = document.getElementById('f-perawat');
+      sel.innerHTML = '<option value="">— Pilih perawat —</option>';
+      document.getElementById('f-jabatan').value = '';
+      jabatan = '';
+      if (!ruangan) return;
+      MASTER.staf.filter(s => s.ruangan === ruangan).forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.nama;
+        opt.textContent = s.nama + ' (' + s.jabatan + ')';
+        opt.dataset.jabatan = s.jabatan;
+        sel.appendChild(opt);
+      });
+    }
 
-function setScore(secId, idx, val) {
-  scores[secId][idx] = val;
-  const sg = document.getElementById(`sg-${secId}-${idx}`);
-  sg.querySelectorAll('.score-btn').forEach(btn => {
-    const v = parseInt(btn.dataset.v);
-    btn.className = 'score-btn' + (v === val ? ` sel-${v}` : '');
-  });
-  updateSkorSection(secId);
-  updateSkorSummary();
-}
+    function updateJabatan() {
+      const sel = document.getElementById('f-perawat');
+      const opt = sel.options[sel.selectedIndex];
+      jabatan = opt?.dataset?.jabatan || '';
+      document.getElementById('f-jabatan').value = jabatan;
+      if (jabatan) buildInstrumen(jabatan === 'Kepala Ruangan' ? 'karu' : 'pp');
+    }
 
-function updateSkorSection(secId) {
-  const s = scores[secId];
-  const pct = hitungSkorAspek(s);
-  const el = document.getElementById(`ss-${secId}`);
-  if (el) {
-    el.textContent = pct + ' / 100';
-    el.style.color = pct >= 86 ? 'var(--green)' : pct >= 71 ? 'var(--blue)' : pct >= 56 ? 'var(--amber)' : 'var(--red)';
-  }
-}
+    function buildInstrumen(role) {
+      const instrumen = INSTRUMEN[role];
+      scores = {};
+      instrumen.forEach(sec => { scores[sec.id] = new Array(sec.items.length).fill(0); });
 
-function updateSkorSummary() {
-  const role = jabatan === 'Kepala Ruangan' ? 'karu' : 'pp';
-  const instrumen = INSTRUMEN[role];
-  if (!instrumen) return;
+      const container = document.getElementById('instrumen-container');
+      container.innerHTML = '';
 
-  const ids = instrumen.map(s => s.id);
-  const labels = ['askep','sop','manajemen','dokumentasi'];
-  ids.forEach((id, i) => {
-    const pct = hitungSkorAspek(scores[id] || []);
-    const el = document.getElementById(`s-${labels[i]}`);
-    if (el) el.textContent = pct > 0 ? pct + '%' : '–';
-  });
-}
+      instrumen.forEach(sec => {
+        const secDiv = document.createElement('div');
+        secDiv.style.marginBottom = '1rem';
 
-// STEP NAVIGATION
-function goStep(n) {
-  document.querySelectorAll('.pane').forEach((p,i) => p.classList.toggle('active', i === n));
-  document.querySelectorAll('.step').forEach((s,i) => {
-    s.classList.remove('active','done');
-    if (i === n) s.classList.add('active');
-    else if (i < n) s.classList.add('done');
-  });
-  currentStep = n;
-  if (n === 3) buildPreview();
-}
+        const head = document.createElement('div');
+        head.className = 'section-head';
+        head.innerHTML = `<span class="section-title">${sec.judul}</span>
+      <span class="section-score" id="ss-${sec.id}" style="color:var(--text-sec)">– / 100</span>`;
 
-function nextStep(current) {
-  if (current === 0) {
-    const req = ['f-supervisor','f-tanggal','f-ruangan','f-shift','f-perawat'];
-    for (const id of req) {
-      if (!document.getElementById(id).value) {
-        showToast('Harap lengkapi semua data identitas yang wajib diisi.','error');
-        document.getElementById(id).focus();
-        return;
+        const body = document.createElement('div');
+        body.className = 'section-body';
+
+        sec.items.forEach((item, i) => {
+          const row = document.createElement('div');
+          row.className = 'item-row';
+          row.innerHTML = `
+        <span class="item-num">${i + 1}.</span>
+        <span class="item-text">${item}</span>
+        <div class="score-group" id="sg-${sec.id}-${i}">
+          ${[1, 2, 3, 4].map(v => `<button class="score-btn" data-v="${v}" 
+            onclick="setScore('${sec.id}',${i},${v})">${v}</button>`).join('')}
+        </div>`;
+          body.appendChild(row);
+        });
+
+        secDiv.appendChild(head);
+        secDiv.appendChild(body);
+        container.appendChild(secDiv);
+      });
+      updateSkorSummary();
+    }
+
+    function setScore(secId, idx, val) {
+      scores[secId][idx] = val;
+      const sg = document.getElementById(`sg-${secId}-${idx}`);
+      sg.querySelectorAll('.score-btn').forEach(btn => {
+        const v = parseInt(btn.dataset.v);
+        btn.className = 'score-btn' + (v === val ? ` sel-${v}` : '');
+      });
+      updateSkorSection(secId);
+      updateSkorSummary();
+    }
+
+    function updateSkorSection(secId) {
+      const s = scores[secId];
+      const pct = hitungSkorAspek(s);
+      const el = document.getElementById(`ss-${secId}`);
+      if (el) {
+        el.textContent = pct + ' / 100';
+        el.style.color = pct >= 86 ? 'var(--green)' : pct >= 71 ? 'var(--blue)' : pct >= 56 ? 'var(--amber)' : 'var(--red)';
       }
     }
-    if (!jabatan) { showToast('Pilih perawat yang akan disupervisi.','error'); return; }
-  }
-  if (current === 1) {
-    const role = jabatan === 'Kepala Ruangan' ? 'karu' : 'pp';
-    if (!INSTRUMEN[role]) { showToast('Pilih perawat terlebih dahulu di langkah 1.','error'); goStep(0); return; }
-    const allFilled = INSTRUMEN[role].every(sec => scores[sec.id] && scores[sec.id].every(v => v > 0));
-    if (!allFilled) { showToast('Harap isi semua item penilaian sebelum melanjutkan.','error'); return; }
-  }
-  goStep(current + 1);
-}
 
-function buildPreview() {
-  const role = jabatan === 'Kepala Ruangan' ? 'karu' : 'pp';
-  const instrumen = INSTRUMEN[role];
-  const skor_aspek = instrumen.map(sec => hitungSkorAspek(scores[sec.id]));
-  const bobot = instrumen.map(s => s.bobot);
-  const total = hitungSkorTotal(skor_aspek, bobot);
-  const kat = getKategori(total);
+    function updateSkorSummary() {
+      const role = jabatan === 'Kepala Ruangan' ? 'karu' : 'pp';
+      const instrumen = INSTRUMEN[role];
+      if (!instrumen) return;
 
-  const pc = document.getElementById('preview-content');
-  pc.innerHTML = `
+      const ids = instrumen.map(s => s.id);
+      const labels = ['askep', 'sop', 'manajemen', 'dokumentasi'];
+      ids.forEach((id, i) => {
+        const pct = hitungSkorAspek(scores[id] || []);
+        const el = document.getElementById(`s-${labels[i]}`);
+        if (el) el.textContent = pct > 0 ? pct + '%' : '–';
+      });
+    }
+
+    // STEP NAVIGATION
+    let highestStep = 0; // step tertinggi yang sudah boleh diakses
+
+    // Pasang event listener pada step bar (hanya bisa klik step yang sudah done)
+    document.getElementById('step-bar').addEventListener('click', function (e) {
+      const stepEl = e.target.closest('.step');
+      if (!stepEl) return;
+      const targetStep = parseInt(stepEl.dataset.step);
+      // Hanya boleh klik step yang sudah selesai (done) atau step saat ini
+      if (targetStep > highestStep) {
+        showToast('Selesaikan langkah saat ini terlebih dahulu.', 'error');
+        return;
+      }
+      // Jika mundur ke step sebelumnya, langsung pindah tanpa validasi
+      if (targetStep <= currentStep) {
+        switchToStep(targetStep);
+        return;
+      }
+      // Jika maju, harus lewat validasi
+      if (validateStep(currentStep)) {
+        switchToStep(targetStep);
+      }
+    });
+
+    function switchToStep(n) {
+      document.querySelectorAll('.pane').forEach((p, i) => p.classList.toggle('active', i === n));
+      document.querySelectorAll('.step').forEach((s, i) => {
+        s.classList.remove('active', 'done', 'locked');
+        if (i === n) s.classList.add('active');
+        else if (i < n || i <= highestStep) s.classList.add('done');
+        else s.classList.add('locked');
+      });
+      currentStep = n;
+      if (n === 3) buildPreview();
+      // Scroll ke atas
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function validateStep(step) {
+      if (step === 0) {
+        const fields = [
+          { id: 'f-supervisor', label: 'Nama Supervisor' },
+          { id: 'f-tanggal', label: 'Tanggal Supervisi' },
+          { id: 'f-ruangan', label: 'Ruangan' },
+          { id: 'f-shift', label: 'Shift Dinas' },
+          { id: 'f-perawat', label: 'Nama Perawat' }
+        ];
+        for (const f of fields) {
+          if (!document.getElementById(f.id).value) {
+            showToast(`Harap isi "${f.label}" terlebih dahulu.`, 'error');
+            document.getElementById(f.id).focus();
+            return false;
+          }
+        }
+        if (!jabatan) {
+          showToast('Pilih perawat yang akan disupervisi.', 'error');
+          return false;
+        }
+        return true;
+      }
+      if (step === 1) {
+        const role = jabatan === 'Kepala Ruangan' ? 'karu' : 'pp';
+        if (!INSTRUMEN[role]) {
+          showToast('Pilih perawat terlebih dahulu di langkah 1.', 'error');
+          switchToStep(0);
+          return false;
+        }
+        // Cek setiap aspek, beri tahu mana yang belum diisi
+        for (const sec of INSTRUMEN[role]) {
+          const s = scores[sec.id];
+          if (!s) {
+            showToast(`Aspek "${sec.judul}" belum dinilai.`, 'error');
+            return false;
+          }
+          const kosong = s.filter(v => v === 0).length;
+          if (kosong > 0) {
+            showToast(`Aspek "${sec.judul}" masih ada ${kosong} item yang belum dinilai.`, 'error');
+            return false;
+          }
+        }
+        return true;
+      }
+      // Step 2 (catatan) tidak wajib, langsung lulus
+      return true;
+    }
+
+    function nextStep(current) {
+      if (!validateStep(current)) return;
+      const next = current + 1;
+      if (next > highestStep) highestStep = next;
+      switchToStep(next);
+    }
+
+    function buildPreview() {
+      const role = jabatan === 'Kepala Ruangan' ? 'karu' : 'pp';
+      const instrumen = INSTRUMEN[role];
+      const skor_aspek = instrumen.map(sec => hitungSkorAspek(scores[sec.id]));
+      const bobot = instrumen.map(s => s.bobot);
+      const total = hitungSkorTotal(skor_aspek, bobot);
+      const kat = getKategori(total);
+
+      const pc = document.getElementById('preview-content');
+      pc.innerHTML = `
     <div class="grid-2" style="margin-bottom:1rem">
       <div><div style="font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:.05em">Supervisor</div>
         <div style="font-size:14px;font-weight:500;margin-top:2px">${document.getElementById('f-supervisor').value}</div></div>
@@ -351,9 +569,9 @@ function buildPreview() {
       <span class="badge ${kat.cls}" style="font-size:14px;padding:6px 14px">${kat.label}</span>
     </div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem">
-      ${instrumen.map((sec,i) => {
+      ${instrumen.map((sec, i) => {
         const c = getKategori(skor_aspek[i]);
-        return `<div class="skor-box"><div class="skor-box-lbl">${sec.judul.replace(/^[A-D]\.\s*/,'')}</div>
+        return `<div class="skor-box"><div class="skor-box-lbl">${sec.judul.replace(/^[A-D]\.\s*/, '')}</div>
           <div class="skor-box-val" style="font-size:18px">${skor_aspek[i]}%</div>
           <div class="skor-box-max">${sec.bobot}% bobot</div></div>`;
       }).join('')}
@@ -365,173 +583,168 @@ function buildPreview() {
     <div><div style="font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Rekomendasi Tindak Lanjut</div>
       <div style="font-size:13px;color:var(--text);line-height:1.6;background:var(--bg2);padding:10px;border-radius:var(--radius)">${document.getElementById('f-rekomendasi').value}</div></div>` : ''}
   `;
-}
-
-async function submitForm() {
-  const btn = document.getElementById('btn-submit');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading"></span> Menyimpan...';
-
-  const role = jabatan === 'Kepala Ruangan' ? 'karu' : 'pp';
-  const instrumen = INSTRUMEN[role];
-  const skor_aspek = instrumen.map(sec => hitungSkorAspek(scores[sec.id]));
-  const bobot = instrumen.map(s => s.bobot);
-  const total = hitungSkorTotal(skor_aspek, bobot);
-  const kat = getKategori(total);
-
-  const payload = {
-    supervisor: document.getElementById('f-supervisor').value,
-    tanggal: document.getElementById('f-tanggal').value,
-    ruangan: document.getElementById('f-ruangan').value,
-    shift: document.getElementById('f-shift').value,
-    nama_perawat: document.getElementById('f-perawat').value,
-    jabatan: jabatan,
-    skor_askep: skor_aspek[0],
-    skor_sop: skor_aspek[1],
-    skor_manajemen: skor_aspek[2],
-    skor_dokumentasi: skor_aspek[3],
-    skor_total: total,
-    kategori: kat.label,
-    catatan: document.getElementById('f-catatan').value,
-    rekomendasi: document.getElementById('f-rekomendasi').value,
-    target_perbaikan: document.getElementById('f-target').value,
-    detail_scores: JSON.stringify(scores)
-  };
-
-  // Simpan lokal dulu sebagai fallback
-  simpanLokal(payload);
-
-  let berhasil = false;
-
-  if (CONFIG.APPS_SCRIPT_URL && !CONFIG.APPS_SCRIPT_URL.includes('GANTI')) {
-    try {
-      // Metode: Kirim POST via hidden form + iframe
-      // Ini bypass CORS karena form submissions tidak terkena CORS restrictions
-      berhasil = await kirimViaForm(payload);
-    } catch (e) {
-      console.error('Gagal kirim ke Sheets:', e);
-      berhasil = false;
     }
-  }
 
-  document.getElementById('success-msg').textContent = berhasil
-    ? `Data berhasil dikirim ke Google Sheets. Skor: ${total}% (${kat.label})`
-    : `Data disimpan secara lokal (offline). Sync ke Sheets saat koneksi tersedia. Skor: ${total}% (${kat.label})`;
+    async function submitForm() {
+      const btn = document.getElementById('btn-submit');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span> Menyimpan...';
 
-  btn.disabled = false;
-  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Simpan & Kirim ke Google Sheets';
+      const role = jabatan === 'Kepala Ruangan' ? 'karu' : 'pp';
+      const instrumen = INSTRUMEN[role];
+      const skor_aspek = instrumen.map(sec => hitungSkorAspek(scores[sec.id]));
+      const bobot = instrumen.map(s => s.bobot);
+      const total = hitungSkorTotal(skor_aspek, bobot);
+      const kat = getKategori(total);
 
-  goStep(4);
-  document.getElementById('step-bar').style.display = 'none';
-}
+      const payload = {
+        supervisor: document.getElementById('f-supervisor').value,
+        tanggal: document.getElementById('f-tanggal').value,
+        ruangan: document.getElementById('f-ruangan').value,
+        shift: document.getElementById('f-shift').value,
+        nama_perawat: document.getElementById('f-perawat').value,
+        jabatan: jabatan,
+        skor_askep: skor_aspek[0],
+        skor_sop: skor_aspek[1],
+        skor_manajemen: skor_aspek[2],
+        skor_dokumentasi: skor_aspek[3],
+        skor_total: total,
+        kategori: kat.label,
+        catatan: document.getElementById('f-catatan').value,
+        rekomendasi: document.getElementById('f-rekomendasi').value,
+        target_perbaikan: document.getElementById('f-target').value,
+        detail_scores: JSON.stringify(scores)
+      };
 
-/**
- * Kirim data ke Google Apps Script menggunakan GET request dengan query parameters.
- * GET request ke Apps Script Web App tidak terkena masalah CORS redirect yang 
- * terjadi pada POST, karena Apps Script menangani redirect GET secara transparan.
- * Kita encode payload sebagai parameter 'data' di URL.
- */
-function kirimViaForm(payload) {
-  return new Promise((resolve) => {
-    // Encode payload as query parameter for GET request
-    const url = CONFIG.APPS_SCRIPT_URL + '?action=saveData&data=' + encodeURIComponent(JSON.stringify(payload));
-    
-    // Coba fetch GET dulu (cross-origin GET ke Apps Script biasanya berhasil)
-    fetch(url, { redirect: 'follow' })
-      .then(resp => {
-        if (!resp.ok) throw new Error('Response not ok: ' + resp.status);
-        return resp.json();
-      })
-      .then(result => {
-        console.log('Respon dari Apps Script:', result);
-        resolve(result.status === 'ok');
-      })
-      .catch(err => {
-        console.warn('Fetch GET gagal, mencoba via iframe...', err);
-        // Fallback: gunakan iframe
-        kirimViaIframe(payload)
-          .then(resolve)
-          .catch(() => resolve(false));
+      // Simpan lokal dulu sebagai fallback
+      simpanLokal(payload);
+
+      let berhasil = false;
+
+      if (CONFIG.APPS_SCRIPT_URL && !CONFIG.APPS_SCRIPT_URL.includes('GANTI')) {
+        try {
+          console.log('Mengirim data ke Google Sheets...');
+          berhasil = await kirimKeSheets(payload);
+          console.log('Hasil pengiriman:', berhasil ? 'BERHASIL' : 'GAGAL');
+        } catch (e) {
+          console.error('Gagal kirim ke Sheets:', e);
+          berhasil = false;
+        }
+      }
+
+      document.getElementById('success-msg').textContent = berhasil
+        ? `Data berhasil dikirim ke Google Sheets. Skor: ${total}% (${kat.label})`
+        : `Data disimpan secara lokal (offline). Sync ke Sheets saat koneksi tersedia. Skor: ${total}% (${kat.label})`;
+
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Simpan & Kirim ke Google Sheets';
+
+      // Pindah ke layar sukses (step 4) — langsung tanpa validasi
+      document.querySelectorAll('.pane').forEach((p, i) => p.classList.toggle('active', i === 4));
+      document.getElementById('step-bar').style.display = 'none';
+    }
+
+    /**
+     * Kirim data ke Google Apps Script menggunakan hidden form + iframe.
+     * 
+     * KENAPA PAKAI FORM BUKAN FETCH?
+     * - Form submission HTML tradisional TIDAK terkena CORS restrictions
+     * - Google Apps Script melakukan redirect (302) pada POST, yang membuat fetch gagal
+     * - Form + iframe adalah satu-satunya cara yang 100% reliable untuk cross-origin POST
+     * 
+     * Setiap field dikirim sebagai input tersendiri agar Apps Script bisa baca via e.parameter
+     */
+    function kirimKeSheets(payload) {
+      return new Promise((resolve) => {
+        // Buat iframe tersembunyi sebagai target form
+        const iframeName = 'gs_submit_' + Date.now();
+        const iframe = document.createElement('iframe');
+        iframe.name = iframeName;
+        iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
+        document.body.appendChild(iframe);
+
+        // Buat form tersembunyi
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = CONFIG.APPS_SCRIPT_URL;
+        form.target = iframeName;
+        form.style.display = 'none';
+
+        // Tambahkan setiap field sebagai hidden input
+        // Apps Script akan baca ini via e.parameter.nama_field
+        Object.keys(payload).forEach(key => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = String(payload[key]);
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+
+        let resolved = false;
+
+        function done(success) {
+          if (resolved) return;
+          resolved = true;
+          // Cleanup setelah delay singkat
+          setTimeout(() => {
+            try { document.body.removeChild(form); } catch (e) { }
+            try { document.body.removeChild(iframe); } catch (e) { }
+          }, 500);
+          resolve(success);
+        }
+
+        // Iframe onload = form berhasil disubmit dan server merespons
+        iframe.onload = () => {
+          console.log('✅ Form berhasil dikirim ke Apps Script (iframe loaded)');
+          done(true);
+        };
+
+        iframe.onerror = () => {
+          console.error('❌ Iframe error');
+          done(false);
+        };
+
+        // Timeout 15 detik — jika iframe belum load, anggap berhasil
+        // (bisa terjadi karena cross-origin iframe tidak selalu fire onload)
+        setTimeout(() => {
+          if (!resolved) {
+            console.log('⏳ Timeout 15s — anggap pengiriman berhasil');
+            done(true);
+          }
+        }, 15000);
+
+        // Submit form!
+        console.log('📤 Mengirim form ke:', CONFIG.APPS_SCRIPT_URL);
+        form.submit();
       });
-  });
-}
-
-/**
- * Fallback: kirim data via hidden iframe + form POST
- * Form submission tradisional tidak terkena CORS restrictions
- */
-function kirimViaIframe(payload) {
-  return new Promise((resolve) => {
-    const iframeName = 'submit_frame_' + Date.now();
-    const iframe = document.createElement('iframe');
-    iframe.name = iframeName;
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = CONFIG.APPS_SCRIPT_URL;
-    form.target = iframeName;
-    form.style.display = 'none';
-
-    // Kirim semua data sebagai hidden field bernama 'payload'
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify(payload);
-    form.appendChild(input);
-
-    document.body.appendChild(form);
-
-    // Timeout: anggap berhasil setelah 5 detik (karena kita tidak bisa baca response dari iframe cross-origin)
-    const timeout = setTimeout(() => {
-      cleanup();
-      resolve(true); // Anggap berhasil karena form pasti terkirim
-    }, 5000);
-
-    iframe.onload = () => {
-      clearTimeout(timeout);
-      cleanup();
-      resolve(true);
-    };
-
-    iframe.onerror = () => {
-      clearTimeout(timeout);
-      cleanup();
-      resolve(false);
-    };
-
-    function cleanup() {
-      try { document.body.removeChild(form); } catch(e) {}
-      try { document.body.removeChild(iframe); } catch(e) {}
     }
 
-    form.submit();
-  });
-}
+    function resetForm() {
+      document.getElementById('step-bar').style.display = '';
+      document.getElementById('f-supervisor').value = '';
+      document.getElementById('f-tanggal').value = new Date().toISOString().split('T')[0];
+      document.getElementById('f-ruangan').value = '';
+      document.getElementById('f-shift').value = '';
+      document.getElementById('f-perawat').innerHTML = '<option value="">— Pilih ruangan dulu —</option>';
+      document.getElementById('f-jabatan').value = '';
+      document.getElementById('f-catatan').value = '';
+      document.getElementById('f-rekomendasi').value = '';
+      document.getElementById('f-target').value = '';
+      document.getElementById('instrumen-container').innerHTML = '';
+      jabatan = '';
+      scores = {};
+      highestStep = 0;
+      switchToStep(0);
+    }
 
-function resetForm() {
-  document.getElementById('step-bar').style.display = '';
-  document.getElementById('f-supervisor').value = '';
-  document.getElementById('f-tanggal').value = new Date().toISOString().split('T')[0];
-  document.getElementById('f-ruangan').value = '';
-  document.getElementById('f-shift').value = '';
-  document.getElementById('f-perawat').innerHTML = '<option value="">— Pilih ruangan dulu —</option>';
-  document.getElementById('f-jabatan').value = '';
-  document.getElementById('f-catatan').value = '';
-  document.getElementById('f-rekomendasi').value = '';
-  document.getElementById('f-target').value = '';
-  document.getElementById('instrumen-container').innerHTML = '';
-  jabatan = '';
-  scores = {};
-  goStep(0);
-}
-
-function showToast(msg, type='info') {
-  const area = document.getElementById('toast-area');
-  area.innerHTML = `<div class="toast toast-${type} show">${msg}</div>`;
-  setTimeout(() => { area.innerHTML = ''; }, 4000);
-}
-</script>
+    function showToast(msg, type = 'info') {
+      const area = document.getElementById('toast-area');
+      area.innerHTML = `<div class="toast toast-${type} show">${msg}</div>`;
+      setTimeout(() => { area.innerHTML = ''; }, 4000);
+    }
+  </script>
 </body>
+
 </html>

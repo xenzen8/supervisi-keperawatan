@@ -25,41 +25,107 @@ const HEADERS = [
 ];
 
 // =====================================================================
-// doPost — menerima data dari form.html (via hidden form + iframe fallback)
+// doPost — menerima data dari form.html via hidden form + iframe
+// Data dikirim sebagai form fields (e.parameter), bukan JSON body
 // =====================================================================
 function doPost(e) {
   try {
-    // Parse data - coba beberapa metode untuk kompatibilitas
-    let data;
-    try {
-      // Metode 1: JSON dari body (fetch POST)
-      data = JSON.parse(e.postData.contents);
-    } catch (parseErr) {
+    Logger.log('doPost dipanggil');
+    Logger.log('e.parameter: ' + JSON.stringify(e.parameter || {}));
+    
+    let data = {};
+    
+    // Metode 1 (utama): Baca dari form fields (e.parameter)
+    // Ini yang dikirim oleh hidden form di form.html
+    if (e.parameter && (e.parameter.supervisor || e.parameter.nama_perawat || e.parameter.tanggal)) {
+      Logger.log('Membaca data dari e.parameter (form fields)');
+      data = {
+        tanggal: e.parameter.tanggal || '',
+        supervisor: e.parameter.supervisor || '',
+        ruangan: e.parameter.ruangan || '',
+        nama_perawat: e.parameter.nama_perawat || '',
+        jabatan: e.parameter.jabatan || '',
+        shift: e.parameter.shift || '',
+        skor_askep: Number(e.parameter.skor_askep) || 0,
+        skor_sop: Number(e.parameter.skor_sop) || 0,
+        skor_manajemen: Number(e.parameter.skor_manajemen) || 0,
+        skor_dokumentasi: Number(e.parameter.skor_dokumentasi) || 0,
+        skor_total: Number(e.parameter.skor_total) || 0,
+        kategori: e.parameter.kategori || '',
+        catatan: e.parameter.catatan || '',
+        rekomendasi: e.parameter.rekomendasi || '',
+        target_perbaikan: e.parameter.target_perbaikan || '',
+        detail_scores: e.parameter.detail_scores || ''
+      };
+    }
+    // Metode 2 (fallback): Baca dari JSON body (jika dikirim via fetch)
+    else if (e.postData && e.postData.contents) {
+      Logger.log('Membaca data dari postData.contents (JSON)');
       try {
-        // Metode 2: Form-encoded data (dari hidden form + iframe)
+        data = JSON.parse(e.postData.contents);
+      } catch (parseErr) {
+        Logger.log('Gagal parse JSON: ' + parseErr.toString());
+        // Metode 3: coba baca payload field (JSON dalam 1 field)
         if (e.parameter && e.parameter.payload) {
           data = JSON.parse(e.parameter.payload);
-        } else {
-          data = e.parameter || {};
         }
-      } catch (formErr) {
-        data = e.parameter || {};
       }
     }
 
-    const result = simpanDataSupervisi(data);
+    Logger.log('Data yang akan disimpan: ' + JSON.stringify(data));
     
-    // Untuk iframe fallback, return HTML response (bukan JSON) agar tidak error
+    // Simpan ke sheet
+    simpanDataSupervisi(data);
+    
+    Logger.log('Data berhasil disimpan!');
+    
+    // Return HTML response (karena form + iframe memerlukan HTML, bukan JSON)
     return HtmlService.createHtmlOutput(
-      '<html><body><script>window.parent.postMessage("saved","*");</script>Data tersimpan.</body></html>'
+      '<html><body><p>Data berhasil disimpan.</p></body></html>'
     );
 
   } catch (err) {
-    Logger.log('doPost Error: ' + err.toString());
+    Logger.log('doPost ERROR: ' + err.toString());
     return HtmlService.createHtmlOutput(
-      '<html><body>Error: ' + err.toString() + '</body></html>'
+      '<html><body><p>Error: ' + err.toString() + '</p></body></html>'
     );
   }
+}
+
+// =====================================================================
+// TEST: Jalankan fungsi ini dari editor untuk tes simpan data
+// Pilih fungsi "testSaveData" lalu klik ▶ Run
+// Kemudian cek sheet Data_Supervisi — harus ada 1 baris baru
+// =====================================================================
+function testSaveData() {
+  const testData = {
+    tanggal: '2026-04-01',
+    supervisor: 'TEST SUPERVISOR',
+    ruangan: 'Ruang Mawar',
+    nama_perawat: 'TEST PERAWAT',
+    jabatan: 'Perawat Pelaksana',
+    shift: 'Pagi (07.00-14.00)',
+    skor_askep: 85,
+    skor_sop: 80,
+    skor_manajemen: 75,
+    skor_dokumentasi: 90,
+    skor_total: 82,
+    kategori: 'Baik',
+    catatan: 'Test data dari script editor',
+    rekomendasi: 'Test rekomendasi',
+    target_perbaikan: '2026-04-30',
+    detail_scores: '{}'
+  };
+  
+  const result = simpanDataSupervisi(testData);
+  Logger.log('Test result: ' + JSON.stringify(result));
+  
+  // Tampilkan alert
+  SpreadsheetApp.getUi().alert(
+    'Test berhasil! Cek sheet Data_Supervisi — harus ada baris baru dengan nama "TEST PERAWAT".\n\n' +
+    'Jika baris muncul, berarti backend sudah benar.\n' +
+    'Hapus baris test tersebut setelah selesai mengecek.'
+  );
 }
 
 // =====================================================================
